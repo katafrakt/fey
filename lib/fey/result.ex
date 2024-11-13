@@ -56,7 +56,7 @@ defmodule Fey.Result do
   If it is, `{:error, error}` is returned, where `error` is either passed as a second
   argument, or by default is `:not_found`.
 
-  Note that generally `Fey.Option.wrap_not_nil/2` is preferred, as it's more idiomatic.
+  Note that generally `Fey.Option.wrap_not_nil/1` is preferred, as it's more idiomatic.
   However, if you're set on using `Result`, this is available.
 
   ## Examples
