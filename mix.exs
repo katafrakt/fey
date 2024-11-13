@@ -7,7 +7,11 @@ defmodule Fey.MixProject do
       version: "0.0.1",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      name: "Fey",
+      description: "Pipe-friendly functions to work with result tuples and option values",
+      source_url: "https://github.com/katafrakt/fey",
+      package: package()
     ]
   end
 
@@ -22,6 +26,13 @@ defmodule Fey.MixProject do
   defp deps do
     [
       {:ex_doc, "~> 0.31", only: :dev, runtime: false}
+    ]
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      links: %{"github" => "https://github.com/katafrakt/fey"}
     ]
   end
 end
