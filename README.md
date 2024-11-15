@@ -22,6 +22,33 @@ with record when not is_nil(record) <- Repo.get(DataFile, id),
 
 Fey offers a different approach: use a regular function that returns data-or-nil and then call `Fey.Result.wrap_not_nil/1` on it, which results in either `{:ok, record}` or `{:error, :not_found}`. Then it's taken through a pipeline of functions operating on the results ~~monad~~[^1] tuple.
 
+### "Reversed with"
+
+Another case where `Fey` could help is with so-called "reversed with" (or "sad path with") where you execute bunch of operations until the first success. Let's say we have an IP address and we want to check 3 different APIs to check if it should not be banned. The code could look like this:
+
+``` elixir
+def banned?(ip) do
+  with {:error, :not_found} <- check_api1(ip),
+      {:error, :not_found} <- check_api2(ip),
+      {:error, :not_found} <- check_api3(ip) do
+    false
+  else
+    {:ok, _reason} -> true
+  end
+end
+```
+
+With `Fey` it would look like this:
+
+``` elixir
+def banned?(ip) do
+  check_api1(ip)
+  |> Fey.Result.bind_error(fn -> check_api2(ip) end)
+  |> Fey.Result.bind_error(fn -> check_api3(ip) end)
+  |> Fey.Result.error?()
+end
+```
+
 ### Option vs Result
 
 Fey encourages using option ~~monad~~ instead of result where it makes sense. Result is best when we are talking about a result of an operation, however option works better when we lookup something.

@@ -255,4 +255,43 @@ defmodule Fey.Result do
       _ -> raise BadArgument, message: "#{inspect(result)} is not a valid result tuple"
     end
   end
+
+  @doc """
+  Inverse of `bind/2` - if the result is an error, executes fun and returns its result.
+
+  If the result is success, just returns it.
+
+  Raises `Fey.Result.BadArgument` if the value passed as argument is not a valid result tuple.
+
+  This function makes most sense when used in a pipeline where you want to
+  take the first successful result. For example:
+
+  ```elixir
+  parse_as_iso_datetime(input)
+  |> Fey.Result.bind_error(fn -> parse_as_iso_date(input) end)
+  |> Fey.Result.bind_error(fn -> parse_as_naive_datetime(input) end)
+  |> Fey.Result.bind_error(fn -> parse_as_naive_date(input) end)
+
+  # {:ok, parsed_date} | {:error, :bad_format}
+  ```
+
+  ## Examples
+
+      iex> Fey.Result.bind_error({:error, :not_found}, fn -> {:ok, 42} end)
+      {:ok, 42}
+
+      iex> Fey.Result.bind_error({:ok, nil}, fn -> {:ok, 42} end)
+      {:ok, nil}
+
+      iex> Fey.Result.bind_error(nil, fn -> {:ok, 42} end)
+      ** (Fey.Result.BadArgument) nil is not a valid result tuple
+  """
+  @spec bind_error(t(), fun) :: any()
+  def bind_error(result, fun) do
+    case result do
+      {:ok, value} -> {:ok, value}
+      {:error, _error} -> fun.()
+      _ -> raise BadArgument, message: "#{inspect(result)} is not a valid result tuple"
+    end
+  end
 end
