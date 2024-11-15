@@ -11,7 +11,8 @@ defmodule Fey.MixProject do
       name: "Fey",
       description: "Pipe-friendly functions to work with result tuples and option values",
       source_url: "https://github.com/katafrakt/fey",
-      package: package()
+      package: package(),
+      docs: docs()
     ]
   end
 
@@ -33,6 +34,13 @@ defmodule Fey.MixProject do
     [
       licenses: ["MIT"],
       links: %{"github" => "https://github.com/katafrakt/fey"}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"]
     ]
   end
 end
