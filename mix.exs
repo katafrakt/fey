@@ -41,7 +41,8 @@ defmodule Fey.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md"]
+      extras: ["README.md"],
+      markdown_processor: {ExDoc.Markdown.Earmark, footnotes: true}
     ]
   end
 end
