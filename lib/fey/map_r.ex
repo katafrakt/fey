@@ -20,7 +20,7 @@ defmodule Fey.MapR do
       iex> Fey.MapR.get([1,2,3], :x)
       ** (BadMapError) expected a map, got: [1, 2, 3]
   """
-  @spec get(map(), any()) :: Fey.Result.t()
+  @spec get(map(), any()) :: Fey.Result.t(term())
   def get(map, key) do
     if Map.has_key?(map, key),
       do: {:ok, map[key]},

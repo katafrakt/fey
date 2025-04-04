@@ -35,10 +35,10 @@ defmodule Fey.Option do
   "fetched/calculated, but has no value".
   """
 
-  @type some :: {:some, term()}
+  @type some(t) :: {:some, t}
   # none is a built-in type and we cannot redefine it
   @type none_ :: :none
-  @type t :: some() | none_()
+  @type t(a) :: some(a) | none_()
 
   defmodule BadArgument do
     defexception [:message]
@@ -66,7 +66,7 @@ defmodule Fey.Option do
       iex> Fey.Option.wrap({:some, 15})
       {:some, {:some, 15}}
   """
-  @spec wrap(term()) :: some()
+  @spec wrap(value) :: some(value) when value: term()
   def wrap(value), do: {:some, value}
 
   @doc """
@@ -83,7 +83,7 @@ defmodule Fey.Option do
       iex> Fey.Option.wrap_not_nil(nil)
       :none
   """
-  @spec wrap_not_nil(term()) :: t()
+  @spec wrap_not_nil(value) :: t(value) when value: term()
   def wrap_not_nil(value) do
     case value do
       nil -> :none
@@ -106,7 +106,7 @@ defmodule Fey.Option do
       iex> Fey.Option.some?(nil)
       ** (Fey.Option.BadArgument) nil is not a valid option
   """
-  @spec some?(t()) :: boolean()
+  @spec some?(t(term())) :: boolean()
   def some?(option) do
     case option do
       {:some, _} -> true
@@ -130,7 +130,7 @@ defmodule Fey.Option do
       iex> Fey.Option.none?(nil)
       ** (Fey.Option.BadArgument) nil is not a valid option
   """
-  @spec none?(t()) :: boolean()
+  @spec none?(t(term())) :: boolean()
   def none?(option), do: not some?(option)
 
   @doc """
@@ -150,7 +150,7 @@ defmodule Fey.Option do
       iex> Fey.Option.get!(nil)
       ** (Fey.Option.BadArgument) nil is not a valid option
   """
-  @spec get!(t()) :: any()
+  @spec get!(t(value)) :: value when value: term()
   def get!(option) do
     case option do
       {:some, value} -> value
@@ -176,7 +176,7 @@ defmodule Fey.Option do
       iex> Fey.Option.get_with_default("string", 10)
       ** (Fey.Option.BadArgument) "string" is not a valid option
   """
-  @spec get_with_default(t(), any()) :: any()
+  @spec get_with_default(t(value), value) :: value when value: term()
   def get_with_default(option, default) do
     case option do
       {:some, value} -> value
@@ -203,7 +203,7 @@ defmodule Fey.Option do
       iex> Fey.Option.map(55, fn v -> v * 2 end)
       ** (Fey.Option.BadArgument) 55 is not a valid option
   """
-  @spec map(t(), fun) :: t()
+  @spec map(t(a), (a -> b)) :: t(b) when a: term(), b: term()
   def map(option, fun) do
     case option do
       {:some, value} -> {:some, fun.(value)}
@@ -234,7 +234,7 @@ defmodule Fey.Option do
       iex> Fey.Option.bind(15, fn v -> {:some, v/2} end)
       ** (Fey.Option.BadArgument) 15 is not a valid option
   """
-  @spec bind(t(), fun) :: any()
+  @spec bind(t(a), (a -> b)) :: b when a: term(), b: term()
   def bind(option, fun) do
     case option do
       {:some, value} -> fun.(value)

@@ -18,9 +18,9 @@ defmodule Fey.Result do
   errors that might happpen: `{:ok, :not_found}` (from `Repo.fetch`) or `{:error, :sku_not_found}`.
   """
 
-  @type success :: {:ok, term()}
-  @type error :: {:error, term()}
-  @type t :: success() | error()
+  @typep success(value) :: {:ok, value}
+  @typep error :: {:error, term()}
+  @type t(value) :: success(value) | error()
 
   defmodule BadArgument do
     defexception [:message]
@@ -48,7 +48,7 @@ defmodule Fey.Result do
       iex> Fey.Result.wrap({:ok, "fourty two"})
       {:ok, {:ok, "fourty two"}}
   """
-  @spec wrap(term()) :: success()
+  @spec wrap(value) :: success(value) when value: term()
   def wrap(value), do: {:ok, value}
 
   @doc """
@@ -70,7 +70,7 @@ defmodule Fey.Result do
       iex> Fey.Result.wrap_not_nil(nil, :number_missing)
       {:error, :number_missing}
   """
-  @spec wrap_not_nil(term(), atom()) :: t()
+  @spec wrap_not_nil(term(), term()) :: t(term())
   def wrap_not_nil(value, error \\ :not_found) do
     case value do
       nil -> {:error, error}
@@ -93,7 +93,7 @@ defmodule Fey.Result do
       iex> Fey.Result.ok?(42)
       ** (Fey.Result.BadArgument) 42 is not a valid result tuple
   """
-  @spec ok?(t()) :: boolean()
+  @spec ok?(t(term())) :: boolean()
   def ok?(result) do
     case result do
       {:ok, _} -> true
@@ -118,7 +118,7 @@ defmodule Fey.Result do
       iex> Fey.Result.error?(42)
       ** (Fey.Result.BadArgument) 42 is not a valid result tuple
   """
-  @spec error?(t()) :: boolean()
+  @spec error?(t(term())) :: boolean()
   def error?(result), do: not ok?(result)
 
   @doc """
@@ -138,7 +138,7 @@ defmodule Fey.Result do
       iex> Fey.Result.get!(:some_atom)
       ** (Fey.Result.BadArgument) :some_atom is not a valid result tuple
   """
-  @spec get!(t()) :: any()
+  @spec get!(t(term())) :: term()
   def get!(result) do
     case result do
       {:ok, value} -> value
@@ -164,6 +164,7 @@ defmodule Fey.Result do
       iex> Fey.Result.get_with_default("string", 1567)
       ** (Fey.Result.BadArgument) "string" is not a valid result tuple
   """
+  @spec get_with_default(t(a), a) :: a when a: var
   def get_with_default(result, default_value) do
     case result do
       {:ok, value} -> value
@@ -190,6 +191,7 @@ defmodule Fey.Result do
       iex> Fey.Result.error!(:some_atom)
       ** (Fey.Result.BadArgument) :some_atom is not a valid result tuple
   """
+  @spec error!(t(term())) :: term()
   def error!(result) do
     case result do
       {:error, error} -> error
@@ -216,7 +218,7 @@ defmodule Fey.Result do
       iex> Fey.Result.map(:some_atom, fn v -> v / 2 end)
       ** (Fey.Result.BadArgument) :some_atom is not a valid result tuple
   """
-  @spec map(t(), fun) :: t()
+  @spec map(t(a), (a -> b)) :: t(b) when a: term(), b: term()
   def map(result, fun) do
     case result do
       {:ok, value} -> {:ok, fun.(value)}
@@ -247,7 +249,7 @@ defmodule Fey.Result do
       iex> Fey.Result.bind(:some_atom, fn v -> {:ok, v / 2} end)
       ** (Fey.Result.BadArgument) :some_atom is not a valid result tuple
   """
-  @spec bind(t(), fun) :: any()
+  @spec bind(t(a), (a -> b)) :: b | error() when a: term(), b: term()
   def bind(result, fun) do
     case result do
       {:ok, value} -> fun.(value)
@@ -286,7 +288,8 @@ defmodule Fey.Result do
       iex> Fey.Result.bind_error(nil, fn -> {:ok, 42} end)
       ** (Fey.Result.BadArgument) nil is not a valid result tuple
   """
-  @spec bind_error(t(), fun) :: any()
+  @spec bind_error(t(value), (-> b)) :: t(a) | b
+        when value: term(), a: term(), b: term()
   def bind_error(result, fun) do
     case result do
       {:ok, value} -> {:ok, value}

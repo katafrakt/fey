@@ -20,7 +20,7 @@ defmodule Fey.KeywordR do
       iex> Fey.Keyword.get(%{a: 1}, :a)
       ** (FunctionClauseError) no function clause matching in Keyword.has_key?/2
   """
-  @spec get(Keyword.t(), any()) :: Fey.Result.t()
+  @spec get(Keyword.t(), term()) :: Fey.Option.t(term())
   def get(list, key) do
     if Keyword.has_key?(list, key),
       do: {:some, Keyword.get(list, key)},
