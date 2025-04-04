@@ -8,8 +8,8 @@ Repo.get(DataFile, id)
 |> Fey.Result.map(& &1.filename)
 |> Fey.Result.and_then(&File.open/1)
 |> Fey.Result.and_then(&Jason.decode/1)
-|> Fey.Map.get("score")
-|> Fey.Option.get_or(0.0)
+|> Fey.MapR.get("score")
+|> Fey.Result.get_or(0.0)
 ```
 
 This code reads the records from the database, wraps it in the result tuple and then, only when the record was found, performs a bunch of operations on it.
