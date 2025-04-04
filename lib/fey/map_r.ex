@@ -1,6 +1,6 @@
 defmodule Fey.MapR do
   @doc """
-  Alternative to `map[key]` (and `Fey.Map.get`), but returns a result tuple instead of value-or-nil.
+  Alternative to `Map.get/2` (and `Fey.Map.get/2`), but returns a result tuple instead of value-or-nil.
   It allows to distinguish whether the key was not found at all or it was there, but the value was `nil`.
   If the key wasn't in the map, returns `{:error, :not_found}`.
 
