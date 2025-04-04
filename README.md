@@ -5,11 +5,11 @@ Fey is a set of functions to work with result tuples and their counterparts - op
 ``` elixir
 Repo.get(DataFile, id)
 |> Fey.Result.wrap_not_nil()
-|> Fey.Result.map(fn df -> df.filename end)
-|> Fey.Result.bind(fn fname -> File.open(fname) end)
-|> Fey.Result.bind(fn contents -> Jason.decode(contents) end)
+|> Fey.Result.map(& &1.filename)
+|> Fey.Result.and_then(&File.open/1)
+|> Fey.Result.and_then(&Jason.decode/1)
 |> Fey.Map.get("score")
-|> Fey.Result.get_or(0.0)
+|> Fey.Option.get_or(0.0)
 ```
 
 This code reads the records from the database, wraps it in the result tuple and then, only when the record was found, performs a bunch of operations on it.
@@ -43,8 +43,8 @@ With `Fey` it would look like this:
 ``` elixir
 def banned?(ip) do
   check_api1(ip)
-  |> Fey.Result.bind_error(fn -> check_api2(ip) end)
-  |> Fey.Result.bind_error(fn -> check_api3(ip) end)
+  |> Fey.Result.or_else(fn -> check_api2(ip) end)
+  |> Fey.Result.or_else(fn -> check_api3(ip) end)
   |> Fey.Result.error?()
 end
 ```

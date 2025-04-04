@@ -222,20 +222,20 @@ defmodule Fey.Option do
 
   ## Examples
 
-      iex> Fey.Option.bind({:some, 42}, fn v -> {:some, v/2} end)
+      iex> Fey.Option.and_then({:some, 42}, fn v -> {:some, v/2} end)
       {:some, 21.0}
 
-      iex> Fey.Option.bind({:some, 42}, fn v -> v/2 end)
+      iex> Fey.Option.and_then({:some, 42}, fn v -> v/2 end)
       21.0
 
-      iex> Fey.Option.bind(:none, fn v -> {:some, v/2} end)
+      iex> Fey.Option.and_then(:none, fn v -> {:some, v/2} end)
       :none
 
-      iex> Fey.Option.bind(15, fn v -> {:some, v/2} end)
+      iex> Fey.Option.and_then(15, fn v -> {:some, v/2} end)
       ** (Fey.Option.BadArgument) 15 is not a valid option
   """
-  @spec bind(t(a), (a -> b)) :: b when a: term(), b: term()
-  def bind(option, fun) do
+  @spec and_then(t(a), (a -> b)) :: b when a: term(), b: term()
+  def and_then(option, fun) do
     case option do
       {:some, value} -> fun.(value)
       :none -> :none

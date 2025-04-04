@@ -237,20 +237,20 @@ defmodule Fey.Result do
 
   ## Examples
 
-      iex> Fey.Result.bind({:ok, 42}, fn v -> {:ok, v / 2} end)
+      iex> Fey.Result.and_then({:ok, 42}, fn v -> {:ok, v / 2} end)
       {:ok, 21.0}
 
-      iex> Fey.Result.bind({:ok, 42}, fn v -> v / 2 end)
+      iex> Fey.Result.and_then({:ok, 42}, fn v -> v / 2 end)
       21.0
 
-      iex> Fey.Result.bind({:error, :not_found}, fn v -> {:ok, v / 2} end)
+      iex> Fey.Result.and_then({:error, :not_found}, fn v -> {:ok, v / 2} end)
       {:error, :not_found}
 
-      iex> Fey.Result.bind(:some_atom, fn v -> {:ok, v / 2} end)
+      iex> Fey.Result.and_then(:some_atom, fn v -> {:ok, v / 2} end)
       ** (Fey.Result.BadArgument) :some_atom is not a valid result tuple
   """
-  @spec bind(t(a), (a -> b)) :: b | error() when a: term(), b: term()
-  def bind(result, fun) do
+  @spec and_then(t(a), (a -> b)) :: b | error() when a: term(), b: term()
+  def and_then(result, fun) do
     case result do
       {:ok, value} -> fun.(value)
       {:error, error} -> {:error, error}
@@ -259,7 +259,7 @@ defmodule Fey.Result do
   end
 
   @doc """
-  Inverse of `bind/2` - if the result is an error, executes fun and returns its result.
+  Inverse of `and_then/2` - if the result is an error, executes fun and returns its result.
 
   If the result is success, just returns it.
 
@@ -270,27 +270,27 @@ defmodule Fey.Result do
 
   ```elixir
   parse_as_iso_datetime(input)
-  |> Fey.Result.bind_error(fn -> parse_as_iso_date(input) end)
-  |> Fey.Result.bind_error(fn -> parse_as_naive_datetime(input) end)
-  |> Fey.Result.bind_error(fn -> parse_as_naive_date(input) end)
+  |> Fey.Result.or_else(fn -> parse_as_iso_date(input) end)
+  |> Fey.Result.or_else(fn -> parse_as_naive_datetime(input) end)
+  |> Fey.Result.or_else(fn -> parse_as_naive_date(input) end)
 
   # {:ok, parsed_date} | {:error, :bad_format}
   ```
 
   ## Examples
 
-      iex> Fey.Result.bind_error({:error, :not_found}, fn -> {:ok, 42} end)
+      iex> Fey.Result.or_else({:error, :not_found}, fn -> {:ok, 42} end)
       {:ok, 42}
 
-      iex> Fey.Result.bind_error({:ok, nil}, fn -> {:ok, 42} end)
+      iex> Fey.Result.or_else({:ok, nil}, fn -> {:ok, 42} end)
       {:ok, nil}
 
-      iex> Fey.Result.bind_error(nil, fn -> {:ok, 42} end)
+      iex> Fey.Result.or_else(nil, fn -> {:ok, 42} end)
       ** (Fey.Result.BadArgument) nil is not a valid result tuple
   """
-  @spec bind_error(t(value), (-> b)) :: t(a) | b
+  @spec or_else(t(value), (-> b)) :: t(a) | b
         when value: term(), a: term(), b: term()
-  def bind_error(result, fun) do
+  def or_else(result, fun) do
     case result do
       {:ok, value} -> {:ok, value}
       {:error, _error} -> fun.()
