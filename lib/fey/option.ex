@@ -167,17 +167,17 @@ defmodule Fey.Option do
 
   ## Examples
 
-      iex> Fey.Option.get_with_default({:some, 42}, 10)
+      iex> Fey.Option.get_or({:some, 42}, 10)
       42
 
-      iex> Fey.Option.get_with_default(:none, 10)
+      iex> Fey.Option.get_or(:none, 10)
       10
 
-      iex> Fey.Option.get_with_default("string", 10)
+      iex> Fey.Option.get_or("string", 10)
       ** (Fey.Option.BadArgument) "string" is not a valid option
   """
-  @spec get_with_default(t(value), value) :: value when value: term()
-  def get_with_default(option, default) do
+  @spec get_or(t(value), value) :: value when value: term()
+  def get_or(option, default) do
     case option do
       {:some, value} -> value
       :none -> default

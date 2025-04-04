@@ -155,17 +155,17 @@ defmodule Fey.Result do
 
   ## Examples
 
-      iex> Fey.Result.get_with_default({:ok, 42}, 1567)
+      iex> Fey.Result.get_or({:ok, 42}, 1567)
       42
 
-      iex> Fey.Result.get_with_default({:error, :not_found}, 1567)
+      iex> Fey.Result.get_or({:error, :not_found}, 1567)
       1567
 
-      iex> Fey.Result.get_with_default("string", 1567)
+      iex> Fey.Result.get_or("string", 1567)
       ** (Fey.Result.BadArgument) "string" is not a valid result tuple
   """
-  @spec get_with_default(t(a), a) :: a when a: var
-  def get_with_default(result, default_value) do
+  @spec get_or(t(a), a) :: a when a: var
+  def get_or(result, default_value) do
     case result do
       {:ok, value} -> value
       {:error, _} -> default_value
