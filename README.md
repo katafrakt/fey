@@ -1,5 +1,15 @@
 # Fey
 
+<p align="center">
+  <a href="https://hex.pm/packages/fey">
+    <img alt="Hex Version" src="https://img.shields.io/hexpm/v/fey.svg">
+  </a>
+
+  <a href="https://hexdocs.pm/fey">
+    <img alt="Hex Docs" src="http://img.shields.io/badge/hex.pm-docs-green.svg?style=flat">
+  </a>
+</p>
+
 Fey is a set of functions to work with result tuples and their counterparts - option values. It is heavily inspired by OCaml naming conventions and built for people who like their pipe operator (perhaps too much).
 
 ``` elixir
