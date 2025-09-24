@@ -12,9 +12,14 @@ defmodule Fey.MixProject do
       description: "Pipe-friendly functions to work with result tuples and option values",
       source_url: "https://github.com/katafrakt/fey",
       package: package(),
-      docs: docs()
+      docs: docs(),
+      compilers: Mix.compilers(),
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Run "mix help compile.app" to learn about applications.
   def application do
@@ -27,7 +32,9 @@ defmodule Fey.MixProject do
   defp deps do
     [
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:ecto, "~> 3.13", only: :test},
+      {:ecto_sqlite3, "~> 0.21", only: :test}
     ]
   end
 
